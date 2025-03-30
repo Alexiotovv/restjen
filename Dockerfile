@@ -18,19 +18,14 @@ RUN apt-get update && apt-get install -y \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql zip soap
 
-# Copiar configuración de PHP
-COPY php.ini /usr/local/etc/php/php.ini
+# Copia el script de inicialización
+COPY docker-entrypoint.sh /usr/local/bin/
 
-# Configurar MySQL
-RUN mkdir -p /var/run/mysqld && chown -R mysql:mysql /var/run/mysqld
-RUN service mysql start && \
-    mysql -uroot -e "CREATE DATABASE IF NOT EXISTS rest_db;" && \
-    mysql -uroot -e "CREATE USER 'rest_user'@'%' IDENTIFIED BY '1984Avv!';" && \
-    mysql -uroot -e "GRANT ALL PRIVILEGES ON rest_db.* TO 'rest_user'@'%';" && \
-    mysql -uroot -e "FLUSH PRIVILEGES;"
+# Asigna permisos de ejecución
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
 
-# Copiar configuración de Nginx
-COPY nginx.conf /etc/nginx/nginx.conf
+# Usa el script como punto de entrada
+ENTRYPOINT ["/usr/local/bin/docker-entrypoint.sh"]
 
 # Definir el punto de entrada con supervisord para manejar varios procesos
 COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
