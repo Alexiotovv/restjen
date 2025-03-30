@@ -28,7 +28,7 @@ define('DB_NAME', $config['DB_NAME']);
 define('DB_USER', $config['DB_USER']);
 //define('DB_PASS', '@admin123adm@');
 define('DB_PASS', $config['DB_PASS']);
-define('DB_PORT', $config['DB_PORT']);
+//define('DB_PORT', $config['DB_PORT']);
 define('DB_CHARSET', 'utf8mb4');
 
 //API DNI RUC
