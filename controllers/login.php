@@ -1,6 +1,5 @@
 <?php 
     Session::init(); 
-	session_start();
 	print_r($_SESSION);
 class Login extends Controller {
 
@@ -36,7 +35,23 @@ class Login extends Controller {
 	}
 	
 	function run()
-	{
+	{	
+		// Si el resultado es un número (por ejemplo, 4 = usuario no encontrado)
+    if (is_numeric($result)) {
+        echo json_encode([
+            'status' => 'error',
+            'message' => 'Usuario o contraseña incorrectos'
+        ]);
+        return;
+    }
+
+    // Si el resultado es un array con los datos de sesión
+    echo json_encode([
+        'status' => 'ok',
+        'message' => 'Login exitoso',
+        'session' => $_SESSION // Para verificar si las sesiones se están estableciendo bien
+    ]);
+
 		print_r(json_encode($this->model->run($_POST)));
 	}
 	
