@@ -35,7 +35,7 @@ RUN composer global require phpoffice/phpspreadsheet \
 COPY . .
 
 # Establecer permisos para el directorio
-RUN chown -R www-data:www-data /var/www
+RUN chown -R www-data:www-data /var/www && chmod -R 755 /var/www
 
 # Exponer el puerto 80 y ejecutar Apache
 EXPOSE 9000
