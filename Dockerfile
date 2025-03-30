@@ -1,6 +1,7 @@
+# Usar PHP con FPM
 FROM php:8.1-fpm
 
-# Instalar dependencias del sistema
+# Instalar dependencias
 RUN apt-get update && apt-get install -y \
     nginx \
     mysql-server \
@@ -10,43 +11,31 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libonig-dev \
     zip unzip curl nano && \
+    docker-php-ext-install gd zip pdo_mysql soap && \
     apt-get clean
-
-# Instalar extensiones PHP necesarias
-RUN docker-php-ext-install pdo_mysql gd zip mbstring soap
 
 # Copiar configuración de PHP
 COPY php.ini /usr/local/etc/php/php.ini
 
-# Configurar Nginx
-COPY nginx.conf /etc/nginx/nginx.conf
-
-# Configurar permisos para MySQL
-RUN apt-get update && apt-get install -y \
-    git \
-    curl \
-    libpng-dev \
-    libjpeg-dev \
-    libfreetype6-dev \
-    libzip-dev \
-    libxml2-dev \
-    zip \
-    unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql zip soap
-
-# Inicializar MySQL con la base de datos y usuario
+# Configurar MySQL
+RUN mkdir -p /var/run/mysqld && chown -R mysql:mysql /var/run/mysqld
 RUN service mysql start && \
     mysql -uroot -e "CREATE DATABASE IF NOT EXISTS rest_db;" && \
-    mysql -uroot -e "CREATE USER 'rest_user'@'localhost' IDENTIFIED BY '1984Avv!';" && \
-    mysql -uroot -e "GRANT ALL PRIVILEGES ON rest_db.* TO 'rest_user'@'localhost';" && \
+    mysql -uroot -e "CREATE USER 'rest_user'@'%' IDENTIFIED BY '1984Avv!';" && \
+    mysql -uroot -e "GRANT ALL PRIVILEGES ON rest_db.* TO 'rest_user'@'%';" && \
     mysql -uroot -e "FLUSH PRIVILEGES;"
+
+# Copiar configuración de Nginx
+COPY nginx.conf /etc/nginx/nginx.conf
+
+# Definir el punto de entrada con supervisord para manejar varios procesos
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Exponer puertos
 EXPOSE 80 3306
 
-# Comando para iniciar todos los servicios
-CMD service mysql start && service php8.1-fpm start && nginx -g "daemon off;"
+# Comando para ejecutar todos los servicios
+CMD ["supervisord", "-c", "/etc/supervisor/conf.d/supervisord.conf"]
 
 
 
