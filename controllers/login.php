@@ -1,6 +1,6 @@
 <?php 
     Session::init(); 
-	print_r($_SESSION);
+
 class Login extends Controller {
 
 	function __construct() {
@@ -35,7 +35,7 @@ class Login extends Controller {
 	}
 	
 	function run()
-	{	
+	{
 		print_r(json_encode($this->model->run($_POST)));
 	}
 	
