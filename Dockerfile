@@ -4,7 +4,7 @@ FROM php:8.1-fpm
 # Instalar dependencias
 RUN apt-get update && apt-get install -y \
     nginx \
-    mysql-server \
+    mariadb-server \
     libpng-dev \
     libzip-dev \
     libjpeg-dev \
