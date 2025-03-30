@@ -1,6 +1,7 @@
 <?php 
     Session::init(); 
-
+	session_start();
+	print_r($_SESSION);
 class Login extends Controller {
 
 	function __construct() {
