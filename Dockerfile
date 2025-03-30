@@ -10,9 +10,11 @@ RUN apt-get update && apt-get install -y \
     libjpeg-dev \
     libfreetype6-dev \
     libonig-dev \
+    libxml2-dev \  # Agregar esta línea
     zip unzip curl nano && \
     docker-php-ext-install gd zip pdo_mysql soap && \
     apt-get clean
+
 
 # Copiar configuración de PHP
 COPY php.ini /usr/local/etc/php/php.ini
