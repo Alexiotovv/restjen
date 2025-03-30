@@ -2,19 +2,21 @@
 FROM php:8.1-fpm
 
 # Instalar dependencias
+
 RUN apt-get update && apt-get install -y \
     nginx \
     mariadb-server \
+    git \
+    curl \
     libpng-dev \
-    libzip-dev \
     libjpeg-dev \
     libfreetype6-dev \
-    libonig-dev \
-    libxml2-dev \  # Agregar esta línea
-    zip unzip curl nano && \
-    docker-php-ext-install gd zip pdo_mysql soap && \
-    apt-get clean
-
+    libzip-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql zip soap
 
 # Copiar configuración de PHP
 COPY php.ini /usr/local/etc/php/php.ini
