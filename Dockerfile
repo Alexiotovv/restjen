@@ -22,9 +22,18 @@ COPY php.ini /usr/local/etc/php/php.ini
 COPY nginx.conf /etc/nginx/nginx.conf
 
 # Configurar permisos para MySQL
-RUN mkdir -p /var/lib/mysql /var/run/mysqld && \
-    chown -R mysql:mysql /var/lib/mysql /var/run/mysqld && \
-    chmod 755 /var/lib/mysql /var/run/mysqld
+RUN apt-get update && apt-get install -y \
+    git \
+    curl \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    libxml2-dev \
+    zip \
+    unzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql zip soap
 
 # Inicializar MySQL con la base de datos y usuario
 RUN service mysql start && \
@@ -38,6 +47,10 @@ EXPOSE 80 3306
 
 # Comando para iniciar todos los servicios
 CMD service mysql start && service php8.1-fpm start && nginx -g "daemon off;"
+
+
+
+
 
 # # Usar una imagen base de PHP 8 con Apache
 # FROM php:8.1-fpm
